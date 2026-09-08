@@ -1,36 +1,39 @@
 <?php
+/**
+ * Sander_DisableCompareProducts
+ */
+declare(strict_types=1);
 
-namespace GalacticLabs\DisableCompareProducts\Observer;
+namespace Sander\DisableCompareProducts\Observer;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Store\Model\ScopeInterface;
 
+/**
+ * When "Disable Compare Products" is enabled, add a layout handle that removes every
+ * compare block from the page.
+ */
 class LayoutLoadBefore implements ObserverInterface
 {
-    const DISABLE_COMPARE_CONFIG_PATH = 'catalog/recently_products/disable_compare';
+    public const DISABLE_COMPARE_CONFIG_PATH = 'catalog/recently_products/disable_compare';
+    public const LAYOUT_HANDLE = 'sander_disablecompareproducts_remove_compare';
 
-    /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
-
-    public function __construct(ScopeConfigInterface $scopeConfig)
-    {
-        $this->scopeConfig = $scopeConfig;
+    public function __construct(
+        private readonly ScopeConfigInterface $scopeConfig
+    ) {
     }
 
-    /**
-     * @param Observer $observer
-     * @return void
-     */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
-        $disableCompare = $this->scopeConfig->getValue(self::DISABLE_COMPARE_CONFIG_PATH);
+        if (!$this->scopeConfig->isSetFlag(self::DISABLE_COMPARE_CONFIG_PATH, ScopeInterface::SCOPE_STORE)) {
+            return;
+        }
 
-        if($disableCompare){
-            $layout = $observer->getData('layout');
-            $layout->getUpdate()->addHandle('gl_remove_compare_products');
+        $layout = $observer->getData('layout');
+        if ($layout !== null) {
+            $layout->getUpdate()->addHandle(self::LAYOUT_HANDLE);
         }
     }
 }

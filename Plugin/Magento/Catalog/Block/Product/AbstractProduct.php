@@ -1,38 +1,36 @@
 <?php
+/**
+ * Sander_DisableCompareProducts
+ */
+declare(strict_types=1);
 
-namespace GalacticLabs\DisableCompareProducts\Plugin\Magento\Catalog\Block\Product;
+namespace Sander\DisableCompareProducts\Plugin\Magento\Catalog\Block\Product;
 
-use GalacticLabs\DisableCompareProducts\Observer\LayoutLoadBefore;
+use Magento\Catalog\Block\Product\AbstractProduct as Subject;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
+use Sander\DisableCompareProducts\Observer\LayoutLoadBefore;
 
+/**
+ * Return null for the "add to compare" URL when comparison is disabled, so the many
+ * templates that only show the compare link when this URL is set stop rendering it.
+ */
 class AbstractProduct
 {
-    /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
-
-    public function __construct(ScopeConfigInterface $scopeConfig)
-    {
-        $this->scopeConfig = $scopeConfig;
+    public function __construct(
+        private readonly ScopeConfigInterface $scopeConfig
+    ) {
     }
 
     /**
-     * Return 'null' for product compare url if product comparison is disabled. This deals with a number
-     * of the templates that rely on this being set to actually show the compare links.
-     *
-     * @param \Magento\Catalog\Block\Product\AbstractProduct $subject
-     * @param string $result
-     * @return string|null
+     * @param Subject $subject
+     * @param mixed $result
+     * @return mixed
      */
-    public function afterGetAddToCompareUrl(
-        \Magento\Catalog\Block\Product\AbstractProduct $subject,
-        $result
-    ) {
-        $disableCompare = $this->scopeConfig->getValue(LayoutLoadBefore::DISABLE_COMPARE_CONFIG_PATH);
-
-        if($disableCompare){
-            $result = null;
+    public function afterGetAddToCompareUrl(Subject $subject, mixed $result): mixed
+    {
+        if ($this->scopeConfig->isSetFlag(LayoutLoadBefore::DISABLE_COMPARE_CONFIG_PATH, ScopeInterface::SCOPE_STORE)) {
+            return null;
         }
 
         return $result;
