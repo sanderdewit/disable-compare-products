@@ -1,6 +1,11 @@
 <?php
+/**
+ * Sander_DisableCompareProducts
+ */
+declare(strict_types=1);
+
 \Magento\Framework\Component\ComponentRegistrar::register(
     \Magento\Framework\Component\ComponentRegistrar::MODULE,
-    'GalacticLabs_DisableCompareProducts',
+    'Sander_DisableCompareProducts',
     __DIR__
 );

@@ -1,17 +1,22 @@
 {
-    "name": "galacticlabs/disable-compare-products",
-    "description": "Disable compare products functionality",
+    "name": "sander/module-disable-compare-products",
+    "description": "Disable the Compare Products feature in Magento 2 via a store-view config toggle. Sander-maintained fork of galacticlabs/disable-compare-products (MIT).",
     "type": "magento2-module",
-    "version": "1.0.1",
     "license": [
         "MIT"
     ],
+    "require": {
+        "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
+        "magento/framework": "*",
+        "magento/module-catalog": "*",
+        "magento/module-store": "*"
+    },
     "autoload": {
         "files": [
             "registration.php"
         ],
         "psr-4": {
-            "GalacticLabs\\DisableCompareProducts\\": ""
+            "Sander\\DisableCompareProducts\\": ""
         }
     }
 }
